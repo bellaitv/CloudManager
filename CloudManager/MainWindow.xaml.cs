@@ -105,16 +105,26 @@ namespace CloudManager
             else
             {
                 String originalFileName = null;
-                MemoryStream stream = googleDriverWorker.DownloadFile(rootID, downloadProgress, ref originalFileName);
+                String type = null;
+                MemoryStream stream = googleDriverWorker.DownloadFile(rootID, downloadProgress, ref originalFileName, ref type);
                 FileStream fileStream = null;
 
                 try
                 {
-                    string fileName = String.Format("{0}{1}{2}", DOWNLOAD_DIRECTORY, System.IO.Path.DirectorySeparatorChar,  originalFileName);
+                    string fileName = String.Format("{0}{1}{2}", DOWNLOAD_DIRECTORY, System.IO.Path.DirectorySeparatorChar, originalFileName);
                     fileStream = new FileStream(fileName, FileMode.Create);
                     stream.WriteTo(fileStream);
-                    //fileStream.Flush();
+                    stream.Close();
+                    fileStream.Close();
+                    if (type.Contains("text"))
+                    {
+                        ShowPopupText(fileName);
+                    }
+                    else
+                        ShowPopupImage(fileName);
+
                 }
+
                 catch (Exception ex)
                 {
                     //todo show message to user
@@ -128,6 +138,44 @@ namespace CloudManager
                         stream.Close();
                 }
             }
+        }
+
+        private void ShowPopupText(string fileName)
+        {
+            String[] lines = File.ReadAllLines(fileName);
+            StringBuilder builder = new StringBuilder();
+            foreach (String line in lines)
+                builder.AppendLine(line);
+            TextBox textBox = new TextBox();
+            textBox.Text = builder.ToString();
+            var dockPanel = new DockPanel();
+            Popup1.Child = dockPanel;
+            dockPanel.Children.Add(textBox);
+            Popup1.IsOpen = true;
+        }
+
+        private void ShowPopupImage(String fileName)
+        {
+            Image myImage = new Image();
+            BitmapImage myImageSource = new BitmapImage();
+            myImageSource.BeginInit();
+            myImageSource.UriSource = new Uri(fileName);
+            myImageSource.EndInit();
+            myImage.Source = myImageSource;
+            //Button actualButton = GetButtonFromID(rootID);
+            var dockPanel = new DockPanel();
+            Popup1.Child = dockPanel;
+            dockPanel.Children.Add(myImage);
+            Popup1.IsOpen = true;
+        }
+
+        private Button GetButtonFromID(string rootID)
+        {
+            foreach (KeyValuePair<Button, String> keys in buttonDict)
+                if (keys.Value.Equals(rootID))
+                    return keys.Key;
+            //return new Button(); ??
+            return null;
         }
     }
 }

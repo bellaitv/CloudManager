@@ -20,6 +20,6 @@ namespace GoogleDriveBrowser
         IDictionary<String, String> Back(ref String id);
         bool IsFile(String rootID);
 
-        System.IO.MemoryStream DownloadFile(String id, DownloadProgress progresss, ref String fileName);
+        System.IO.MemoryStream DownloadFile(String id, DownloadProgress progresss, ref String fileName, ref String type);
     }
 }

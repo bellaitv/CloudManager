@@ -21,11 +21,7 @@ namespace GoogleDriveBrowser
 
     public class GoogleDriverWorker : IGoogleDriveWorker
     {
-        private const String DIRECTORY_MIME_TYPE = "application/vnd.google-apps.folder";
-
-        private string[] scopes = new String[] { DriveService.Scope.Drive, DriveService.Scope.DriveFile };
-        private string clientID = "753440381473-8vir1veqn1pt4pc0egfu2imimuroq7q2.apps.googleusercontent.com";//"bellaitv"; // configból?
-        private string clientSecret = "kPNZIzBvQDu4CXixz0HzlFyl";//"brasilia94;"; //configból?
+        
         private DriveService service;
         //todo karbantartani pl backroundworker
         private IList<File> all = new List<File>();
@@ -38,24 +34,7 @@ namespace GoogleDriveBrowser
         }
 
         //data to config?
-        private void Connect()
-        {
-            var credential = GoogleWebAuthorizationBroker.AuthorizeAsync(new ClientSecrets
-            {
-                ClientId = clientID,
-                ClientSecret = clientSecret
-            },
-                                                                 scopes,
-                                                                 "bellaitv",
-                                                                 CancellationToken.None,
-                                                                 new FileDataStore("Daimto.GoogleDrive.Auth.Store")).Result;
-
-            service = new DriveService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = "GoogleDriveBrowser",
-            });
-        }
+        
 
         private FileList GetAllFiles()
         {
@@ -238,9 +217,9 @@ namespace GoogleDriveBrowser
         }
 
         //todo rename on progresss
-        public System.IO.MemoryStream DownloadFile(String id, DownloadProgress progresss, ref String fileName)
+        public System.IO.MemoryStream DownloadFile(String id, DownloadProgress progresss, ref String fileName, ref String type)
         {
-            fileName = GetFileNameFromID(id);
+            fileName = GetFileNameFromID(id, ref type);
             var request = service.Files.Get(id);
             var stream = new System.IO.MemoryStream();
             request.MediaDownloader.ProgressChanged +=
@@ -270,12 +249,25 @@ namespace GoogleDriveBrowser
             return stream;
         }
 
-        private string GetFileNameFromID(string id)
+        private string GetFileNameFromID(String id, ref String type)
         {
             var query =
                 from x in all
                 where x.Id == id
                 select x.Title;
+
+            var qu =
+                from x in all
+                where x.Id == id
+                select x.MimeType;
+            using (var sequenceEnum = qu.GetEnumerator())
+            {
+                while (sequenceEnum.MoveNext())
+                {
+                    type = sequenceEnum.Current;
+                }
+            }
+
             using (var sequenceEnum = query.GetEnumerator())
             {
                 while (sequenceEnum.MoveNext())

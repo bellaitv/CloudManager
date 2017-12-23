@@ -18,6 +18,31 @@
         <Label Grid.Row="0" Grid.Column="0" Content="Clouds"/>
         <Label Grid.Row="1" Grid.Column="0" Content="Google Drive"/>
         <Button Grid.Row="0" Grid.Column="1" Content="Back" Margin="0,0,468,0.4" Click="click_back"/>
+        <Popup Margin="10,10,0,13" Name="Popup1" HorizontalAlignment="Left"
+
+ VerticalAlignment="Top" Width="194" Height="200" IsOpen="True">
+
+        </Popup>
+        <!--<Popup x:Name="popup" IsOpen="False" 
+
+            PlacementTarget="{Binding ElementName=selFilesbtn}" 
+
+            Placement="Top" Width="146">
+            <Border BorderBrush="Black" BorderThickness="1" 
+
+                Background="AliceBlue">
+                <StackPanel Orientation="Horizontal">
+                    <Grid Width="142">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto" />
+
+                        </Grid.RowDefinitions>
+                        
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Popup>-->
         <Grid Grid.Row="1" Grid.Column="1" Name="GRID_CLOUD_CONTENT">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
