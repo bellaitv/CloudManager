@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using CloudManagerCommons;
 using System.Windows.Controls;
 using System.IO;
@@ -53,10 +52,8 @@ namespace CloudManager
             {
                 Assembly assembly = Assembly.LoadFile(assemblyPath);
                 foreach (Type type in assembly.GetTypes())
-                {
                     if (type.GetInterfaces().Contains(typeof(ICloudWorker)))
                         return type;
-                }
             }
             catch (Exception e)
             {
@@ -91,6 +88,8 @@ namespace CloudManager
 
         public void click_back()
         {
+            if (String.IsNullOrEmpty(backID))
+                return;
             IDictionary<String, String> childs = cloudWorker.Back(ref backID);
             if (childs.Count == 0)
                 //todo show error to user
