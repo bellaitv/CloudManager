@@ -14,6 +14,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CloudManagerCommons;
+
+
 namespace CloudManager
 {
     /// <summary>
@@ -36,11 +38,13 @@ namespace CloudManager
         private void InitializeClouds()
         {
             bool first = true;
+            Style buttonStyle = Resources["buttonList"] as Style; 
             foreach (KeyValuePair<String, String> setting in settings.dictionary)
             {
                 CloudWorker cloudWorker = new CloudWorker(this, setting.Value);
                 //todo work in the style of the labelbutton
-                Button button = new Button() { Content = setting.Key };
+
+                Button button = new Button() { Content = setting.Key, Style = buttonStyle };
                 button.Click += click_button_label;
                 workerDict.Add(button, cloudWorker);
                 if (first)
@@ -48,6 +52,10 @@ namespace CloudManager
                     cloudWorker.Initialize();
                     actualWorker = cloudWorker;
                 }
+                GRID_CLOUD_LIST.RowDefinitions.Add(new RowDefinition());
+                GRID_CLOUD_LIST.Children.Add(button);
+                Grid.SetRow(button, GRID_CLOUD_LIST.RowDefinitions.Count - 1);
+                Grid.SetColumn(button, 0);
                 first = false;
             }
         }
@@ -58,6 +66,8 @@ namespace CloudManager
             if (actualButton == null)
                 return;
             workerDict.TryGetValue(actualButton, out actualWorker);
+            GRID_CLOUD_CONTENT.Children.Clear();
+            GRID_CLOUD_CONTENT.RowDefinitions.Clear();
             actualWorker.Initialize();
         }
 

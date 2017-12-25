@@ -34,3 +34,5 @@ C:\_VS_WORKSPACE\CloudManager\CloudManager\obj\Debug\CloudManager.csproj.Generat
 C:\_VS_WORKSPACE\CloudManager\CloudManager\obj\Debug\CloudManager.csproj.CoreCompileInputs.cache
 C:\_VS_WORKSPACE\CloudManager\CloudManager\obj\Debug\CloudManager.exe
 C:\_VS_WORKSPACE\CloudManager\CloudManager\obj\Debug\CloudManager.pdb
+C:\_VS_WORKSPACE\CloudManager\CloudManager\bin\Debug\App.config
+C:\_VS_WORKSPACE\CloudManager\CloudManager\obj\Debug\App.baml

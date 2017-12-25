@@ -35,10 +35,9 @@ namespace CloudManager
         public void Initialize()
         {
             Type type = InitializeCloudWorker();
-            //cloudWorker = type as ICloudWorker; //= new GoogleDriverWorker();
             cloudWorker = (ICloudWorker)Activator.CreateInstance(type);
             if (cloudWorker == null)
-                //todo insted of this show msgbox
+                //todo show msgbox insted of this
                 throw new CloudManagerException("The {0} assembly does not contain the implementation of ICloudWorker.");
             IDictionary<String, String> dirs = cloudWorker.GetChildOfRootDir();
             FillInTheCloudContentGrid(dirs);
@@ -47,7 +46,6 @@ namespace CloudManager
 
         private Type InitializeCloudWorker()
         {
-            //todo beolvasni az asszemblit, megtalálni ki implementálja az ICloudWorkert, reflexióval példányosítani
             try
             {
                 Assembly assembly = Assembly.LoadFile(assemblyPath);
@@ -73,7 +71,7 @@ namespace CloudManager
             {
                 if (x % 5 == 0)
                     mainWindow.GRID_CLOUD_CONTENT.RowDefinitions.Add(new RowDefinition());
-                Button actual = new Button() { Content = keys.Value };
+                Button actual = new Button() { Content = keys.Value, Margin = new Thickness(0, 0, 5, 1) };
                 actual.Click += click;
                 mainWindow.GRID_CLOUD_CONTENT.Children.Add(actual);
                 Grid.SetRow(actual, mainWindow.GRID_CLOUD_CONTENT.RowDefinitions.Count - 1);
@@ -95,6 +93,7 @@ namespace CloudManager
                 //todo show error to user
                 Console.WriteLine("error");
             mainWindow.GRID_CLOUD_CONTENT.Children.Clear();
+            mainWindow.GRID_CLOUD_CONTENT.RowDefinitions.Clear();
             FillInTheCloudContentGrid(childs);
         }
 
@@ -116,6 +115,7 @@ namespace CloudManager
                     //todo show error to user
                     Console.WriteLine("error");
                 mainWindow.GRID_CLOUD_CONTENT.Children.Clear();
+                mainWindow.GRID_CLOUD_CONTENT.RowDefinitions.Clear();
                 FillInTheCloudContentGrid(childs);
                 backID = rootID;
             }
