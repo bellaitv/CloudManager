@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.26730.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudManager", "CloudManager\CloudManager.csproj", "{EFE190CD-C304-4FD5-BD99-29E92DEBFF13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleDriveBrowser", "GoogleDriveBrowser\GoogleDriveBrowser.csproj", "{BEF01EC3-31B0-4FFA-B19B-BB4E9D4BAFD8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudManagerCommons", "CloudManagerCommons\CloudManagerCommons.csproj", "{CBEABA27-E28F-459E-8C53-2E014EEBC835}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleDriveLibrary", "GoogleDriveLibrary\GoogleDriveLibrary.csproj", "{BB64AF66-73FD-4268-AA13-8AE2E15C0A11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +19,14 @@ Global
 		{EFE190CD-C304-4FD5-BD99-29E92DEBFF13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFE190CD-C304-4FD5-BD99-29E92DEBFF13}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EFE190CD-C304-4FD5-BD99-29E92DEBFF13}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BEF01EC3-31B0-4FFA-B19B-BB4E9D4BAFD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BEF01EC3-31B0-4FFA-B19B-BB4E9D4BAFD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BEF01EC3-31B0-4FFA-B19B-BB4E9D4BAFD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BEF01EC3-31B0-4FFA-B19B-BB4E9D4BAFD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBEABA27-E28F-459E-8C53-2E014EEBC835}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBEABA27-E28F-459E-8C53-2E014EEBC835}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBEABA27-E28F-459E-8C53-2E014EEBC835}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBEABA27-E28F-459E-8C53-2E014EEBC835}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB64AF66-73FD-4268-AA13-8AE2E15C0A11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB64AF66-73FD-4268-AA13-8AE2E15C0A11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB64AF66-73FD-4268-AA13-8AE2E15C0A11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB64AF66-73FD-4268-AA13-8AE2E15C0A11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

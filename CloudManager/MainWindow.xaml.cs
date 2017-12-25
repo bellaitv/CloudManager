@@ -13,169 +13,57 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using GoogleDriveBrowser;
-
+using CloudManagerCommons;
 namespace CloudManager
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    /// 
-
-
-
     public partial class MainWindow : Window
     {
-        public const int MAX_ROW_COUNT = 5;
-        public String DOWNLOAD_DIRECTORY = @"C:\TMP";
-
-        private IGoogleDriveWorker googleDriverWorker;
-        private IDictionary<Button, String> buttonDict;
-        private String backID;
-
-        private DownloadProgress downloadProgress;
+        private CloudWorker actualWorker;
+        private IDictionary<Button, CloudWorker> workerDict;
+        private Settings settings;
 
         public MainWindow()
         {
             InitializeComponent();
-            buttonDict = new Dictionary<Button, String>();
-            InitializeGoogleDrive();
+            settings = new Settings();
+            workerDict = new Dictionary<Button, CloudWorker>();
+            InitializeClouds();
         }
 
-        private void InitializeGoogleDrive()
+        private void InitializeClouds()
         {
-            googleDriverWorker = new GoogleDriverWorker();
-            IDictionary<String, String> dirs = googleDriverWorker.GetChildOfRootDir();
-            FillInTheCloudContentGrid(dirs);
-            downloadProgress = DownloadProgressMethod;
-        }
-
-        public int DownloadProgressMethod() { return 0; }
-
-        private void FillInTheCloudContentGrid(IDictionary<String, String> dirs)
-        {
-            int x = 0;
-            GRID_CLOUD_CONTENT.RowDefinitions.Add(new RowDefinition());
-            foreach (KeyValuePair<String, String> keys in dirs)
+            bool first = true;
+            foreach (KeyValuePair<String, String> setting in settings.dictionary)
             {
-                if (x % 5 == 0)
-                    GRID_CLOUD_CONTENT.RowDefinitions.Add(new RowDefinition());
-                Button actual = new Button() { Content = keys.Value };
-                actual.Click += click;
-                GRID_CLOUD_CONTENT.Children.Add(actual);
-                Grid.SetRow(actual, GRID_CLOUD_CONTENT.RowDefinitions.Count - 1);
-                Grid.SetColumn(actual, x);
-                if (x > 4)
-                    x = 0;
-                else
-                    x++;
-                buttonDict.Add(actual, keys.Key);
+                CloudWorker cloudWorker = new CloudWorker(this, setting.Value);
+                //todo work in the style of the labelbutton
+                Button button = new Button() { Content = setting.Key };
+                button.Click += click_button_label;
+                workerDict.Add(button, cloudWorker);
+                if (first)
+                {
+                    cloudWorker.Initialize();
+                    actualWorker = cloudWorker;
+                }
+                first = false;
             }
         }
 
-        private void click_back(object sender, RoutedEventArgs e)
+        public void click_button_label(object sender, RoutedEventArgs e)
         {
-            IDictionary<String, String> childs = googleDriverWorker.Back(ref backID);
-            if (childs.Count == 0)
-                //todo show error to user
-                Console.WriteLine("error");
-            GRID_CLOUD_CONTENT.Children.Clear();
-            FillInTheCloudContentGrid(childs);
-        }
-
-        private void click(object sender, RoutedEventArgs e)
-        {
-            Button actual = sender as Button;
-            if (actual == null)
+            Button actualButton = sender as Button;
+            if (actualButton == null)
                 return;
-            String rootID = null;
-            buttonDict.TryGetValue(actual, out rootID);
-            if (rootID == null)
-                return;
-            if (!googleDriverWorker.IsFile(rootID))
-            {
-                IDictionary<String, String> childs = googleDriverWorker.GetChildElements(rootID);
-                if (childs.Count == 0)
-                    //todo show error to user
-                    Console.WriteLine("error");
-                GRID_CLOUD_CONTENT.Children.Clear();
-                FillInTheCloudContentGrid(childs);
-                backID = rootID;
-            }
-            else
-            {
-                String originalFileName = null;
-                String type = null;
-                MemoryStream stream = googleDriverWorker.DownloadFile(rootID, downloadProgress, ref originalFileName, ref type);
-                FileStream fileStream = null;
-
-                try
-                {
-                    string fileName = String.Format("{0}{1}{2}", DOWNLOAD_DIRECTORY, System.IO.Path.DirectorySeparatorChar, originalFileName);
-                    fileStream = new FileStream(fileName, FileMode.Create);
-                    stream.WriteTo(fileStream);
-                    stream.Close();
-                    fileStream.Close();
-                    if (type.Contains("text"))
-                    {
-                        ShowPopupText(fileName);
-                    }
-                    else
-                        ShowPopupImage(fileName);
-
-                }
-
-                catch (Exception ex)
-                {
-                    //todo show message to user
-                    Console.WriteLine(ex.Message);
-                }
-                finally
-                {
-                    if (fileStream != null)
-                        fileStream.Close();
-                    if (stream != null)
-                        stream.Close();
-                }
-            }
+            workerDict.TryGetValue(actualButton, out actualWorker);
+            actualWorker.Initialize();
         }
 
-        private void ShowPopupText(string fileName)
+        public void click_back(object sender, RoutedEventArgs e)
         {
-            String[] lines = File.ReadAllLines(fileName);
-            StringBuilder builder = new StringBuilder();
-            foreach (String line in lines)
-                builder.AppendLine(line);
-            TextBox textBox = new TextBox();
-            textBox.Text = builder.ToString();
-            var dockPanel = new DockPanel();
-            Popup1.Child = dockPanel;
-            dockPanel.Children.Add(textBox);
-            Popup1.IsOpen = true;
-        }
-
-        private void ShowPopupImage(String fileName)
-        {
-            Image myImage = new Image();
-            BitmapImage myImageSource = new BitmapImage();
-            myImageSource.BeginInit();
-            myImageSource.UriSource = new Uri(fileName);
-            myImageSource.EndInit();
-            myImage.Source = myImageSource;
-            //Button actualButton = GetButtonFromID(rootID);
-            var dockPanel = new DockPanel();
-            Popup1.Child = dockPanel;
-            dockPanel.Children.Add(myImage);
-            Popup1.IsOpen = true;
-        }
-
-        private Button GetButtonFromID(string rootID)
-        {
-            foreach (KeyValuePair<Button, String> keys in buttonDict)
-                if (keys.Value.Equals(rootID))
-                    return keys.Key;
-            //return new Button(); ??
-            return null;
+            actualWorker.click_back();
         }
     }
 }
