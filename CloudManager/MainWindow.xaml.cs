@@ -24,14 +24,14 @@ namespace CloudManager
     public partial class MainWindow : Window
     {
         private CloudWorker actualWorker;
-        private IDictionary<Button, CloudWorker> workerDict;
+        private IDictionary<ListBoxItem, CloudWorker> workerDict;
         private Settings settings;
 
         public MainWindow()
         {
             InitializeComponent();
             settings = new Settings();
-            workerDict = new Dictionary<Button, CloudWorker>();
+            workerDict = new Dictionary<ListBoxItem, CloudWorker>();
             InitializeClouds();
         }
 
@@ -44,28 +44,34 @@ namespace CloudManager
                 CloudWorker cloudWorker = new CloudWorker(this, setting.Value);
                 //todo work in the style of the labelbutton
 
-                Button button = new Button() { Content = setting.Key, Style = buttonStyle };
-                button.Click += click_button_label;
-                workerDict.Add(button, cloudWorker);
+                //Button button = new Button() { Content = setting.Key, Style = buttonStyle };
+                //Label label = new Label();
+                //label.PreviewMouseDown += click_button_label;
+                //button.Click += click_button_label;
+                ListBoxItem item = new ListBoxItem() { Content = setting.Key};
+                item.PreviewMouseDown += click_button_label;
+                workerDict.Add(item, cloudWorker);
                 if (first)
                 {
                     cloudWorker.Initialize();
                     actualWorker = cloudWorker;
+                    LABEL_NAME.Content = setting.Key;
                 }
-                GRID_CLOUD_LIST.RowDefinitions.Add(new RowDefinition());
-                GRID_CLOUD_LIST.Children.Add(button);
-                Grid.SetRow(button, GRID_CLOUD_LIST.RowDefinitions.Count - 1);
-                Grid.SetColumn(button, 0);
+                CLOUD_LIST.Items.Add(item);
+                //GRID_CLOUD_LIST.RowDefinitions.Add(new RowDefinition());
+                //GRID_CLOUD_LIST.Children.Add(item);
+                //Grid.SetRow(item, GRID_CLOUD_LIST.RowDefinitions.Count - 1);
+                //Grid.SetColumn(item, 0);
                 first = false;
             }
         }
 
         public void click_button_label(object sender, RoutedEventArgs e)
         {
-            Button actualButton = sender as Button;
-            if (actualButton == null)
+            ListBoxItem actualItem = sender as ListBoxItem;
+            if (actualItem == null)
                 return;
-            workerDict.TryGetValue(actualButton, out actualWorker);
+            workerDict.TryGetValue(actualItem, out actualWorker);
             GRID_CLOUD_CONTENT.Children.Clear();
             GRID_CLOUD_CONTENT.RowDefinitions.Clear();
             actualWorker.Initialize();

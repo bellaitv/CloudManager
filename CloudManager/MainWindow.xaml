@@ -9,16 +9,22 @@
     <Grid Name="GRID_CLOUD_LIST">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Label Grid.Row="0" Grid.Column="0" Content="Clouds" Margin="0,-2,0,2"/>
+        <ListBox Name="CLOUD_LIST" Grid.Row="1" Grid.Column="0">
 
-        <Button Grid.Row="0" Grid.Column="1" Content="Back" Margin="0,0,468,0.4" Click="click_back"/>
-        <Popup Margin="10,10,0,13" Name="Popup1" HorizontalAlignment="Left" VerticalAlignment="Top" Width="194" Height="200" IsOpen="False"/>
-        <Grid Grid.Row="1" Grid.Column="1" Name="GRID_CLOUD_CONTENT">
+        </ListBox>
+        <Button Grid.Row="0" Grid.Column="1" Content="Back" Margin="4,0,10,0.4" Click="click_back" />
+        <Label Grid.Row="0" Grid.Column="2"  Content="Label" Margin="0,0,468,0.4" Name="LABEL_NAME"/>
+        <Popup Margin="10,10,0,13" Name="Popup1" HorizontalAlignment="Left" VerticalAlignment="Top" Width="194" Height="400" IsOpen="False" Placement="Right"/>
+        <Grid Grid.Row="2" Grid.Column="2" Name="GRID_CLOUD_CONTENT">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
@@ -28,5 +34,4 @@
             </Grid.ColumnDefinitions>
         </Grid>
     </Grid>
-    
 </Window>
