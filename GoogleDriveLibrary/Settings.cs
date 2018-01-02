@@ -40,7 +40,7 @@ namespace GoogleDriveLibrary
                             break;
                         }
                     default:
-                        throw new CloudManagerCommons.CloudManagerException("");
+                        throw new CloudManagerCommons.CloudManagerException();
                 }
             }
             //ClientID = ConfigurationManager.AppSettings["client_id"];

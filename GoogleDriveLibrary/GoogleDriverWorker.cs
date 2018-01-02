@@ -27,6 +27,8 @@ namespace GoogleDriveLibrary
         private IList<File> all = new List<File>();
         private Settings settings;
 
+
+        //todo logging?
         public GoogleDriverWorker()
         {
             settings = new Settings();
@@ -57,58 +59,90 @@ namespace GoogleDriveLibrary
 
         private FileList GetAllFiles()
         {
-            FilesResource.ListRequest request = service.Files.List();
-            request.MaxResults = 10000000;
-            FileList files = request.Execute();
-            foreach (var item in files.Items)
+            FileList files = null;
+            try
             {
-                if (!all.Contains(item))
-                    all.Add(item);
+                FilesResource.ListRequest request = service.Files.List();
+                request.MaxResults = 10000000;
+                files = request.Execute();
+                foreach (var item in files.Items)
+                {
+                    if (!all.Contains(item))
+                        all.Add(item);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new CloudManagerException(e.Message, ExceptionType.InformationException, e);
             }
             return files;
         }
 
         public IDictionary<String, String> GetFiles()
         {
-            IDictionary<String, String> result = new Dictionary<String, String>();
-            //linq?
-            foreach (var item in all)
-                if (!item.MimeType.Equals(DIRECTORY_MIME_TYPE))
-                    result.Add(item.Id, item.Title);
+
+            IDictionary<String, String> result = null;
+            try
+            {
+                result = new Dictionary<String, String>();
+                //linq?
+                foreach (var item in all)
+                    if (!item.MimeType.Equals(DIRECTORY_MIME_TYPE))
+                        result.Add(item.Id, item.Title);
+            }
+            catch (Exception e)
+            {
+                throw new CloudManagerException(e.Message, ExceptionType.InformationException, e);
+            }
             return result;
         }
 
         public IDictionary<String, String> GetDirectories()
         {
-            IDictionary<String, String> result = new Dictionary<String, String>();
-            foreach (var item in all)
-                if (item.MimeType.Equals(DIRECTORY_MIME_TYPE))
-                    result.Add(item.Id, item.Title);
+            IDictionary<String, String> result = null;
+            try
+            {
+                result = new Dictionary<String, String>();
+                foreach (var item in all)
+                    if (item.MimeType.Equals(DIRECTORY_MIME_TYPE))
+                        result.Add(item.Id, item.Title);
+            }
+            catch (Exception e)
+            {
+                throw new CloudManagerException(e.Message, ExceptionType.InformationException, e);
+            }
             return result;
         }
 
         public bool UploadDirectory(string _title, string _description, string _parentID, string path)
         {
             bool result = false;
-            string id = UploadEmptyDirectory(_title, _description, _parentID);
-            string[] files = System.IO.Directory.GetFiles(path);
-            foreach (string file in files)
-                result = UploadFile(file, id);
+            try
+            {
+                string id = UploadEmptyDirectory(_title, _description, _parentID);
+                string[] files = System.IO.Directory.GetFiles(path);
+                foreach (string file in files)
+                    result = UploadFile(file, id);
+            }
+            catch (Exception e)
+            {
+                throw new CloudManagerException(e.Message, ExceptionType.DownloadException, e);
+            }
             return result;
         }
 
-        private string GetDirectoryId(string title)
-        {
-            IDictionary<String, String> dirs = GetDirectories();
-            string result = string.Empty;
-            //todo linq
+        //private string GetDirectoryId(string title)
+        //{
+        //    IDictionary<String, String> dirs = GetDirectories();
+        //    string result = string.Empty;
+        //    //todo linq
 
-            foreach (KeyValuePair<String, String> keys in dirs)
-                if (keys.Value.Equals(title))
-                    return keys.Key;
+        //    foreach (KeyValuePair<String, String> keys in dirs)
+        //        if (keys.Value.Equals(title))
+        //            return keys.Key;
 
-            return result;
-        }
+        //    return result;
+        //}
 
         private string UploadEmptyDirectory(string _title, string _description, string _parent)
         {
@@ -129,36 +163,43 @@ namespace GoogleDriveLibrary
 
         public bool UploadFile(string _uploadFile, string _parentID)
         {
-
-            if (System.IO.File.Exists(_uploadFile))
+            try
             {
-                File body = new File();
-                body.Title = System.IO.Path.GetFileName(_uploadFile);
-                body.Description = "File uploaded by Diamto Drive Sample";
-                body.MimeType = GetMimeType(_uploadFile);
-                body.Parents = new List<ParentReference>() { new ParentReference() { Id = _parentID } };
+                if (System.IO.File.Exists(_uploadFile))
+                {
+                    File body = new File();
+                    body.Title = System.IO.Path.GetFileName(_uploadFile);
+                    body.Description = "File uploaded by Diamto Drive Sample";
+                    body.MimeType = GetMimeType(_uploadFile);
+                    body.Parents = new List<ParentReference>() { new ParentReference() { Id = _parentID } };
 
-                // File's content.
-                byte[] byteArray = System.IO.File.ReadAllBytes(_uploadFile);
-                System.IO.MemoryStream stream = new System.IO.MemoryStream(byteArray);
-                try
-                {
-                    FilesResource.InsertMediaUpload request = service.Files.Insert(body, stream, GetMimeType(_uploadFile));
-                    request.Upload();
-                    return request.ResponseBody != null;
+                    // File's content.
+                    byte[] byteArray = System.IO.File.ReadAllBytes(_uploadFile);
+                    System.IO.MemoryStream stream = new System.IO.MemoryStream(byteArray);
+                    try
+                    {
+                        FilesResource.InsertMediaUpload request = service.Files.Insert(body, stream, GetMimeType(_uploadFile));
+                        request.Upload();
+                        return request.ResponseBody != null;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("An error occurred: " + e.Message);
+                        throw;
+                    }
                 }
-                catch (Exception e)
+                else
                 {
-                    Console.WriteLine("An error occurred: " + e.Message);
-                    return false;
+                    string msg = String.Format("File does not exist: {0}", _uploadFile);
+                    Console.WriteLine();
+                    new CloudManagerException(msg, ExceptionType.UploadException);
                 }
             }
-            else
+            catch (Exception e)
             {
-                Console.WriteLine("File does not exist: " + _uploadFile);
-                return false;
+                throw new CloudManagerException(e.Message, ExceptionType.UploadException, e);
             }
-
+            return true;
         }
 
         private static string GetMimeType(string fileName)
@@ -173,11 +214,15 @@ namespace GoogleDriveLibrary
 
         public IDictionary<String, String> GetChildOfRootDir()
         {
-            IDictionary<String, String> result = new Dictionary<String, String>();
-            foreach (var item in all)
-                if (item.Parents.Count == 0)
-                    result.Add(item.Id, item.Title);
-
+            IDictionary<String, String> result = null;
+            try
+            {
+                result = new Dictionary<String, String>();
+                foreach (var item in all)
+                    if (item.Parents.Count == 0)
+                        result.Add(item.Id, item.Title);
+            }
+            catch (Exception e) { throw new CloudManagerException(e.Message, ExceptionType.InformationException, e); }
             return result;
         }
 
@@ -215,56 +260,79 @@ namespace GoogleDriveLibrary
 
         public IDictionary<string, string> Back(ref string id)
         {
-            IDictionary<String, String> result = new Dictionary<String, String>();
-            IList<ParentReference> parents = GetParents(id);
-            foreach (ParentReference actual in parents)
+            IDictionary<String, String> result = null;
+            try
             {
-                id = actual.Id;
-                return GetChildElements(actual.Id);
+                result = new Dictionary<String, String>();
+                IList<ParentReference> parents = GetParents(id);
+                foreach (ParentReference actual in parents)
+                {
+                    id = actual.Id;
+                    return GetChildElements(actual.Id);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new CloudManagerException(e.Message, ExceptionType.InformationException, e);
             }
             return result;
         }
 
         public bool IsFile(string rootID)
         {
-            FilesResource.ListRequest request = service.Files.List();
-            FileList files = request.Execute();
-            foreach (var actual in files.Items)
-                if (actual.Id.Equals(rootID) && !actual.MimeType.Equals(DIRECTORY_MIME_TYPE))
-                    return true;
+            try
+            {
+                FilesResource.ListRequest request = service.Files.List();
+                FileList files = request.Execute();
+                foreach (var actual in files.Items)
+                    if (actual.Id.Equals(rootID) && !actual.MimeType.Equals(DIRECTORY_MIME_TYPE))
+                        return true;
+            }
+            catch (Exception e)
+            {
+                throw new CloudManagerException(e.Message, ExceptionType.InformationException, e);
+            }
             return false;
         }
 
         //todo rename on progresss
         public System.IO.MemoryStream DownloadFile(String id, DownloadProgress progresss, ref String fileName, ref String type)
         {
-            fileName = GetFileNameFromID(id, ref type);
-            var request = service.Files.Get(id);
-            var stream = new System.IO.MemoryStream();
-            request.MediaDownloader.ProgressChanged +=
-    (IDownloadProgress progress) =>
-    {
-        switch (progress.Status)
+            System.IO.MemoryStream stream = null;
+            try
+            {
+                stream = new System.IO.MemoryStream();
+                fileName = GetFileNameFromID(id, ref type);
+                var request = service.Files.Get(id);
+                request.MediaDownloader.ProgressChanged +=
+        (IDownloadProgress progress) =>
         {
-            case DownloadStatus.Downloading:
-                {
-                    Console.WriteLine(progress.BytesDownloaded);
-                    break;
-                }
-            case DownloadStatus.Completed:
-                {
-                    Console.WriteLine("Download complete.");
-                    break;
-                }
-            case DownloadStatus.Failed:
-                {
-                    Console.WriteLine("Download failed.");
-                    break;
-                }
-        }
-    };
+            switch (progress.Status)
+            {
+                case DownloadStatus.Downloading:
+                    {
+                        Console.WriteLine(progress.BytesDownloaded);
+                        break;
+                    }
+                case DownloadStatus.Completed:
+                    {
+                        Console.WriteLine("Download complete.");
+                        break;
+                    }
+                case DownloadStatus.Failed:
+                    {
+                        Console.WriteLine("Download failed.");
+                        break;
+                    }
+            }
+        };
 
-            request.Download(stream);
+                request.Download(stream);
+            }
+            catch (Exception e)
+            {
+                throw new CloudManagerException(e.Message, ExceptionType.DownloadException, e);
+            }
             return stream;
         }
 

@@ -40,7 +40,7 @@ namespace CloudManager
             cloudWorker = (ICloudWorker)Activator.CreateInstance(type);
             if (cloudWorker == null)
                 //todo show msgbox insted of this
-                throw new CloudManagerException("The {0} assembly does not contain the implementation of ICloudWorker.");
+                throw new CloudManagerException("The {0} assembly does not contain the implementation of ICloudWorker.", ExceptionType.InitializeType);
             IDictionary<String, String> dirs = cloudWorker.GetChildOfRootDir();
             FillInTheCloudContentGrid(dirs);
             downloadProgress = DownloadProgressMethod;
