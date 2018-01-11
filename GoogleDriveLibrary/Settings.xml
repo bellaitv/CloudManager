@@ -1,11 +1,11 @@
 ﻿<root>
-  <Property name="">
+  <Property name="client_id">
     <product value=""/>
   </Property>
-  <Property name="">
+  <Property name="client_secret">
     <product value="" />
   </Property>
-  <Property name="">
+  <Property name="user">
     <product value=""/>
   </Property>
 </root>

@@ -8,7 +8,6 @@ using System.IO;
 using System.Windows.Media.Imaging;
 using System.Windows;
 using System.Reflection;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
 namespace CloudManager
@@ -25,11 +24,14 @@ namespace CloudManager
         private ICloudWorker cloudWorker;
         private String backID;
         private String assemblyPath;
+        private PopupWorker popupWorker;
 
         public CloudWorker(MainWindow mainWindow, String assemblyPath)
         {
             this.mainWindow = mainWindow;
             utility = new Utility();
+            popupWorker = new PopupWorker();
+            popupWorker.Initialize();
             this.assemblyPath = assemblyPath;
             buttonDict = new Dictionary<Button, String>();
         }
@@ -68,7 +70,6 @@ namespace CloudManager
         private void FillInTheCloudContentGrid(IDictionary<String, String> dirs)
         {
             int x = 0;
-            //mainWindow.GRID_CLOUD_CONTENT.RowDefinitions.Add(new RowDefinition());
             foreach (KeyValuePair<String, String> keys in dirs)
             {
                 if (x % 5 == 0)
@@ -77,55 +78,34 @@ namespace CloudManager
                     x = 0;
                 }
                 Button actual = new Button() { Content = keys.Value };
-                Popup popup = CreatePopup(keys.Value);
+                actual.MouseRightButtonDown += ((Object sender, MouseButtonEventArgs e) =>
+                {
+                    Button actualButton = sender as Button;
+                    if (actualButton == null)
+                        return;
+                    popupWorker.popupName.IsOpen = false;
+                    popupWorker.ShowPopupRightClick(actualButton.Content as String);                    
+                });
                 actual.MouseLeave += ((Object sender, MouseEventArgs e) =>
                 {
-                    popup.IsOpen = false;
+                    popupWorker.popupName.IsOpen = false;
                 });
-                
                 actual.MouseEnter += ((Object sender, MouseEventArgs e) =>
                 {
-                    popup.IsOpen = true;
+                    Button actualButton = sender as Button;
+                    if (actualButton == null)
+                        return;
+                    popupWorker.ShowPopupName(actualButton.Content as String);
                 });
-                //<Popup Margin="10,10,0,13" Name="Popup1" HorizontalAlignment="Left" VerticalAlignment="Top" Width="194" Height="400" IsOpen="False" Placement="Right"/>
-                actual.Click += click;
-                //ListBoxItem item = new ListBoxItem() { Content = keys.Value, Margin = new Thickness(0, 0, 5, 1) };
-                //item.PreviewMouseDown += click;
+                actual.Click += click_content;
                 mainWindow.GRID_CLOUD_CONTENT.Children.Add(actual);
                 Grid.SetRow(actual, mainWindow.GRID_CLOUD_CONTENT.RowDefinitions.Count - 1);
                 Grid.SetColumn(actual, x);
-                //if (x > 4)
-                //    x = 0;
-                //else
                 x++;
                 buttonDict.Add(actual, keys.Key);
             }
         }
-
-        private void asd(object sender, MouseEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private Popup CreatePopup(String value)
-        {
-            Popup popup = new Popup()
-            {
-                Margin = new Thickness(10, 10, 0, 13),
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Center,
-                Width = 100,
-                Height = 100,
-                IsOpen = false,
-                Placement = PlacementMode.Center
-            };
-            var dockPanel = new DockPanel();
-            TextBox textBox = new TextBox() { Text = value };
-            popup.Child = dockPanel;
-            dockPanel.Children.Add(textBox);
-            return popup;
-        }
-
+        
         public void click_back()
         {
             if (String.IsNullOrEmpty(backID))
@@ -139,7 +119,7 @@ namespace CloudManager
             FillInTheCloudContentGrid(childs);
         }
 
-        private void click(object sender, RoutedEventArgs e)
+        private void click_content(object sender, RoutedEventArgs e)
         {
             mainWindow.Popup1.IsOpen = false;
             utility.DeleteDirectoryContent(DOWNLOAD_DIRECTORY);

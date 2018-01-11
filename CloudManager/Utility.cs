@@ -8,7 +8,6 @@ namespace CloudManager
 {
     public class Utility
     {
-
         public void DeleteDirectoryContent(String path)
         {
             DirectoryInfo di = new DirectoryInfo(path);

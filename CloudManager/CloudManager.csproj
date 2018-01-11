@@ -94,6 +94,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="CloudWorker.cs" />
+    <Compile Include="PopupWorker.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Utility.cs" />
     <Page Include="MainWindow.xaml">

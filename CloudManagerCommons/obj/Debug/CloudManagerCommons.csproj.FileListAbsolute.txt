@@ -1,0 +1,6 @@
+C:\_VS_WORKSPACE\CloudManager\CloudManagerCommons\bin\Debug\CloudManagerCommons.dll
+C:\_VS_WORKSPACE\CloudManager\CloudManagerCommons\bin\Debug\CloudManagerCommons.pdb
+C:\_VS_WORKSPACE\CloudManager\CloudManagerCommons\obj\Debug\CloudManagerCommons.csprojResolveAssemblyReference.cache
+C:\_VS_WORKSPACE\CloudManager\CloudManagerCommons\obj\Debug\CloudManagerCommons.csproj.CoreCompileInputs.cache
+C:\_VS_WORKSPACE\CloudManager\CloudManagerCommons\obj\Debug\CloudManagerCommons.dll
+C:\_VS_WORKSPACE\CloudManager\CloudManagerCommons\obj\Debug\CloudManagerCommons.pdb
