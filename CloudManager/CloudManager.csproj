@@ -95,6 +95,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="CloudWorker.cs" />
+    <Compile Include="Element.cs" />
+    <Compile Include="File.cs" />
+    <Compile Include="Folder.cs" />
     <Compile Include="PopupWorker.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Utility.cs" />

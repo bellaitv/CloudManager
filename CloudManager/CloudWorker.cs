@@ -197,7 +197,7 @@ namespace CloudManager
 
         private void ShowPopupText(string fileName)
         {
-            String[] lines = File.ReadAllLines(fileName);
+            String[] lines = System.IO.File.ReadAllLines(fileName);
             StringBuilder builder = new StringBuilder();
             foreach (String line in lines)
                 builder.AppendLine(line);
