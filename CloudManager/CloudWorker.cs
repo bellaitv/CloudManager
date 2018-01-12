@@ -21,7 +21,8 @@ namespace CloudManager
 
         private MainWindow mainWindow;
         private Utility utility;
-        private IDictionary<Button, String> buttonDict;
+        //private IDictionary<Button, String> buttonDict;
+        private IList<Element> elements;
         private ICloudWorker cloudWorker;
         private String backID;
         private String assemblyPath;
@@ -34,7 +35,8 @@ namespace CloudManager
             popupWorker = new PopupWorker() {CloudsWorker = this};
             popupWorker.Initialize();
             this.assemblyPath = assemblyPath;
-            buttonDict = new Dictionary<Button, String>();
+            //buttonDict = new Dictionary<Button, String>();
+            elements = new List<Element>();
         }
 
         public void Initialize()
@@ -85,6 +87,10 @@ namespace CloudManager
                 else
                     content = String.Format("{0}...", keys.Value.Substring(0, 8));
                 Button actual = new Button() { Content = content , Tag = keys.Value};
+                Element element = null;
+                element = !cloudWorker.IsFile(keys.Key) ? element = new Folder() { ID = keys.Key, CloudWorker = this.cloudWorker, Name = keys.Value} :
+                    element = new File() { ID = keys.Key, CloudWorker = cloudWorker, Name = keys.Value};
+                actual.Tag = element;
                 actual.MouseRightButtonDown += ((Object sender, MouseButtonEventArgs e) =>
                 {
                     Button actualButton = sender as Button;
@@ -111,7 +117,8 @@ namespace CloudManager
                 Grid.SetRow(actual, mainWindow.GRID_CLOUD_CONTENT.RowDefinitions.Count - 1);
                 Grid.SetColumn(actual, x);
                 x++;
-                buttonDict.Add(actual, keys.Key);
+                //buttonDict.Add(actual, keys.Key);
+                elements.Add(element);
             }
         }
 
@@ -135,8 +142,7 @@ namespace CloudManager
             Button actual = sender as Button;
             if (actual == null)
                 return;
-            String rootID = null;
-            buttonDict.TryGetValue(actual, out rootID);
+            String rootID = GetId(actual);
             if (rootID == null)
                 return;
             if (!cloudWorker.IsFile(rootID))
@@ -155,8 +161,14 @@ namespace CloudManager
         }
 
         public String GetId(Button button) {
+            Element tagElement = button.Tag as Element;
+            if (tagElement == null)
+                return null;
             String result = null;
-            buttonDict.TryGetValue(button, out result);
+            //todo linq
+            foreach (Element element in elements)
+                if (element.Name.Equals(tagElement.Name))
+                    result = element.ID;
             return result;
         }
 
@@ -222,15 +234,6 @@ namespace CloudManager
             mainWindow.Popup1.Child = dockPanel;
             dockPanel.Children.Add(myImage);
             mainWindow.Popup1.IsOpen = true;
-        }
-
-        private Button GetButtonFromID(string rootID)
-        {
-            foreach (KeyValuePair<Button, String> keys in buttonDict)
-                if (keys.Value.Equals(rootID))
-                    return keys.Key;
-            //return new Button(); ??
-            return null;
         }
     }
 }

@@ -79,7 +79,6 @@ namespace CloudManager
                     element = new Folder() { ID = id, CloudWorker = this.CloudWorker, Name = lastRightClickedButton.Content as String } :
                     element = new File() { ID = id, CloudWorker = this.CloudWorker, Name = lastRightClickedButton.Content as String };
                     element.Download(dialog.SelectedPath);
-
                 }
 
                 popup.IsOpen = false;
@@ -124,52 +123,6 @@ namespace CloudManager
             popup.Child = grid;
             return popup;
         }
-
-        //private void DownloadFolder(string id, string selectedPath, string name)
-        //{
-        //    String downloadFolder = String.Format("{0}//{1}", selectedPath, name);
-        //    if (!Directory.Exists(downloadFolder))
-        //        Directory.CreateDirectory(downloadFolder);
-        //    IDictionary<String, String> elements = CloudWorker.GetChildElements(id);
-        //    foreach (KeyValuePair<String, String> keys in elements)
-        //    {
-        //        if (CloudWorker.IsFile(keys.Key))
-        //            DownloadFile(keys.Key, downloadFolder);
-        //        else
-        //            DownloadFolder(keys.Key, downloadFolder, keys.Value);
-        //    }
-        //}
-
-        ////todo move to another class
-        //private void DownloadFile(String id, String dirPath)
-        //{
-        //    String originalFileName = null;
-        //    String type = null;
-        //    MemoryStream stream = CloudWorker.DownloadFile(id, CloudsWorker.downloadProgress, ref originalFileName, ref type);
-        //    FileStream fileStream = null;
-
-        //    try
-        //    {
-        //        string fileName = String.Format("{0}{1}{2}", dirPath, System.IO.Path.DirectorySeparatorChar, originalFileName);
-        //        fileStream = new FileStream(fileName, FileMode.Create);
-        //        stream.WriteTo(fileStream);
-        //        stream.Close();
-        //        fileStream.Close();
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        //todo show message to user
-        //        Console.WriteLine(ex.Message);
-        //    }
-        //    finally
-        //    {
-        //        if (fileStream != null)
-        //            fileStream.Close();
-        //        if (stream != null)
-        //            stream.Close();
-        //    }
-        //}
 
         internal void ShowPopupRightClick(Button b)
         {
