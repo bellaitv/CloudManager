@@ -38,7 +38,7 @@ namespace CloudManager
         private void InitializeClouds()
         {
             bool first = true;
-            Style buttonStyle = Resources["buttonList"] as Style; 
+            Style buttonStyle = Resources["buttonList"] as Style;
             foreach (KeyValuePair<String, String> setting in settings.dictionary)
             {
                 CloudsWorker cloudWorker = new CloudsWorker(this, setting.Value);
@@ -48,7 +48,7 @@ namespace CloudManager
                 //Label label = new Label();
                 //label.PreviewMouseDown += click_button_label;
                 //button.Click += click_button_label;
-                ListBoxItem item = new ListBoxItem() { Content = setting.Key};
+                ListBoxItem item = new ListBoxItem() { Content = setting.Key };
                 item.PreviewMouseDown += click_button_label;
                 workerDict.Add(item, cloudWorker);
                 if (first)
@@ -80,6 +80,38 @@ namespace CloudManager
         public void click_back(object sender, RoutedEventArgs e)
         {
             actualWorker.click_back();
+        }
+
+        public void click_New(object sender, RoutedEventArgs e)
+        {
+            PopupNew.IsOpen = true;
+        }
+
+        public void click_NewFolder(object sender, RoutedEventArgs e)
+        {
+            PopupNew.IsOpen = false;
+            //todo
+        }
+
+        public void click_UploadFile(object sender, RoutedEventArgs e)
+        {
+            PopupNew.IsOpen = false;
+            using (var dialog = new System.Windows.Forms.OpenFileDialog())
+            {
+                System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+                String filePath = dialog.FileName;
+                actualWorker.UploadFile(filePath);
+            }
+        }
+
+        public void click_UploadFolder(object sender, RoutedEventArgs e)
+        {
+            PopupNew.IsOpen = false;
+            using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+            {
+                System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+                actualWorker.UploadFolder(dialog.SelectedPath);
+            }
         }
     }
 }

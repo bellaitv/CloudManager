@@ -15,7 +15,7 @@ namespace CloudManager
         public DownloadProgress downloadProgress { private set; get; }
 
         public abstract void Download(String dirPath);
-        public abstract void Uploaad();
+        public abstract void Upload(String parentID);
         public abstract void Remove();
         public abstract void Delete();
         public abstract void Move();

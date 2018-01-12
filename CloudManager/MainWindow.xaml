@@ -22,7 +22,23 @@
 
         </ListBox>
         <Button Grid.Row="0" Grid.Column="1" Content="Back" Margin="4,0,10,0.4" Click="click_back" />
-        <Label Grid.Row="0" Grid.Column="2"  Content="Label" Margin="0,0,468,0.4" Name="LABEL_NAME"/>
+        <Button Grid.Row="0" Grid.Column="2" Content="New" Margin="4,0,10,0.4" Click="click_New" />
+        <Popup Margin="10,10,0,13" Name="PopupNew" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="150" IsOpen="False" Placement="Center">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Row="0" Grid.Column="0" Content="New Folder" Margin="4,0,10,0.4" Click="click_NewFolder" />
+                <Button Grid.Row="1" Grid.Column="0" Content="Upload File" Margin="4,0,10,0.4" Click="click_UploadFile" />
+                <Button Grid.Row="2" Grid.Column="0" Content="Upload Folder" Margin="4,0,10,0.4" Click="click_UploadFolder" />
+            </Grid>
+        </Popup>
+        <Label Grid.Row="0" Grid.Column="3"  Content="Label" Margin="0,0,468,0.4" Name="LABEL_NAME"/>
         <Popup Margin="10,10,0,13" Name="Popup1" HorizontalAlignment="Left" VerticalAlignment="Top" Width="194" Height="680" IsOpen="False" Placement="Right"/>
         <Grid Grid.Row="2" Grid.Column="2" Name="GRID_CLOUD_CONTENT">
             <Grid.ColumnDefinitions>

@@ -364,5 +364,15 @@ namespace GoogleDriveLibrary
             }
             return string.Empty;
         }
+
+        public void DeleteFile(String id)
+        {
+            service.Files.Delete(id).Execute();
+        }
+
+        public void DeleteFolder(String id)
+        {
+            DeleteFile(id);
+        }
     }
 }

@@ -9,8 +9,6 @@ namespace CloudManager
 {
     class File : Element
     {
-        
-
         public override void Delete()
         {
             throw new NotImplementedException();
@@ -53,12 +51,12 @@ namespace CloudManager
 
         public override void Remove()
         {
-            throw new NotImplementedException();
+            CloudWorker.DeleteFile(ID);
         }
 
-        public override void Uploaad()
+        public override void Upload(String parentID)
         {
-            throw new NotImplementedException();
+            CloudWorker.UploadFile(Name, parentID);
         }
     }
 }

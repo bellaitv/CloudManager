@@ -32,7 +32,7 @@ namespace CloudManager
         {
             this.mainWindow = mainWindow;
             utility = new Utility();
-            popupWorker = new PopupWorker() {CloudsWorker = this};
+            popupWorker = new PopupWorker() { CloudsWorker = this };
             popupWorker.Initialize();
             this.assemblyPath = assemblyPath;
             //buttonDict = new Dictionary<Button, String>();
@@ -86,10 +86,10 @@ namespace CloudManager
                     content = keys.Value;
                 else
                     content = String.Format("{0}...", keys.Value.Substring(0, 8));
-                Button actual = new Button() { Content = content , Tag = keys.Value};
+                Button actual = new Button() { Content = content, Tag = keys.Value };
                 Element element = null;
-                element = !cloudWorker.IsFile(keys.Key) ? element = new Folder() { ID = keys.Key, CloudWorker = this.cloudWorker, Name = keys.Value} :
-                    element = new File() { ID = keys.Key, CloudWorker = cloudWorker, Name = keys.Value};
+                element = !cloudWorker.IsFile(keys.Key) ? element = new Folder() { ID = keys.Key, CloudWorker = this.cloudWorker, Name = keys.Value } :
+                    element = new File() { ID = keys.Key, CloudWorker = cloudWorker, Name = keys.Value };
                 actual.Tag = element;
                 actual.MouseRightButtonDown += ((Object sender, MouseButtonEventArgs e) =>
                 {
@@ -110,7 +110,10 @@ namespace CloudManager
                         return;
                     String text = actualButton.Content as String;
                     if (text.Length > 8)
-                        popupWorker.ShowPopupName(actualButton.Tag as String);
+                    {
+                        Element actualElement = actualButton.Tag as Element;
+                        popupWorker.ShowPopupName(actualElement.Name);
+                    }
                 });
                 actual.Click += click_content;
                 mainWindow.GRID_CLOUD_CONTENT.Children.Add(actual);
@@ -157,10 +160,11 @@ namespace CloudManager
                 backID = rootID;
             }
             else
-                WorkWithFile(rootID);
+                ShowFileInPopu(rootID);
         }
 
-        public String GetId(Button button) {
+        public String GetId(Button button)
+        {
             Element tagElement = button.Tag as Element;
             if (tagElement == null)
                 return null;
@@ -172,7 +176,7 @@ namespace CloudManager
             return result;
         }
 
-        private void WorkWithFile(String rootID)
+        private void ShowFileInPopu(String rootID)
         {
             String originalFileName = null;
             String type = null;
@@ -234,6 +238,21 @@ namespace CloudManager
             mainWindow.Popup1.Child = dockPanel;
             dockPanel.Children.Add(myImage);
             mainWindow.Popup1.IsOpen = true;
+        }
+
+        public void UploadFile(String filePath)
+        {
+            //FileInfo info = new FileInfo(filePath);
+            File file = new File() { CloudWorker = cloudWorker, Name = filePath };
+            file.Upload(backID);
+        }
+
+        //todo test
+        public void UploadFolder(String folderPath)
+        {
+            DirectoryInfo d = new DirectoryInfo(folderPath);
+            Folder folder = new Folder() { CloudWorker = cloudWorker, Name = folderPath };
+            folder.Upload(backID);
         }
     }
 }

@@ -25,5 +25,9 @@ namespace CloudManagerCommons
 
         bool UploadFile(string _uploadFile, string _parent);
         bool UploadDirectory(string _title, string _description, string _parent, string path);
+
+        void DeleteFile(String id);
+
+        void DeleteFolder(String id);
     }
 }

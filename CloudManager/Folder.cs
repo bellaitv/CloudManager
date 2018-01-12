@@ -44,12 +44,12 @@ namespace CloudManager
 
         public override void Remove()
         {
-            throw new NotImplementedException();
+            CloudWorker.DeleteFolder(ID);
         }
 
-        public override void Uploaad()
+        public override void Upload(String parentID)
         {
-            throw new NotImplementedException();
+            CloudWorker.UploadDirectory(Name, Name, parentID, Name);
         }
     }
 }

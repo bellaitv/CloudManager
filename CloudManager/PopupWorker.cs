@@ -67,8 +67,10 @@ namespace CloudManager
             Grid grid = new Grid();
             TextBox textBox = new TextBox();
             Button download = new Button() { Content = "Download" };
+            //todo after actions update the grid
             download.Click += ((Object sender, RoutedEventArgs e) =>
             {
+                popup.IsOpen = false;
                 Element element = null;
                 Button actualButton = sender as Button;
                 using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
@@ -80,9 +82,6 @@ namespace CloudManager
                     element = new File() { ID = id, CloudWorker = this.CloudWorker, Name = lastRightClickedButton.Content as String };
                     element.Download(dialog.SelectedPath);
                 }
-
-                popup.IsOpen = false;
-
             });
             Button moveToOtherCloud = new Button() { Content = "Move to another cloud" };
             moveToOtherCloud.Click += ((Object sender, RoutedEventArgs e) =>
@@ -103,6 +102,13 @@ namespace CloudManager
             delete.Click += ((Object sender, RoutedEventArgs e) =>
             {
                 popup.IsOpen = false;
+                Element element = null;
+                Button actualButton = sender as Button;
+                String id = CloudsWorker.GetId(lastRightClickedButton);
+                element = !CloudWorker.IsFile(id) ?
+                element = new Folder() { ID = id, CloudWorker = this.CloudWorker, Name = lastRightClickedButton.Content as String } :
+                element = new File() { ID = id, CloudWorker = this.CloudWorker, Name = lastRightClickedButton.Content as String };
+                element.Remove();
             });
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition());
