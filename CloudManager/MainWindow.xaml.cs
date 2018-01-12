@@ -23,15 +23,15 @@ namespace CloudManager
     /// </summary>
     public partial class MainWindow : Window
     {
-        private CloudWorker actualWorker;
-        private IDictionary<ListBoxItem, CloudWorker> workerDict;
+        private CloudsWorker actualWorker;
+        private IDictionary<ListBoxItem, CloudsWorker> workerDict;
         private Settings settings;
 
         public MainWindow()
         {
             InitializeComponent();
             settings = new Settings();
-            workerDict = new Dictionary<ListBoxItem, CloudWorker>();
+            workerDict = new Dictionary<ListBoxItem, CloudsWorker>();
             InitializeClouds();
         }
 
@@ -41,7 +41,7 @@ namespace CloudManager
             Style buttonStyle = Resources["buttonList"] as Style; 
             foreach (KeyValuePair<String, String> setting in settings.dictionary)
             {
-                CloudWorker cloudWorker = new CloudWorker(this, setting.Value);
+                CloudsWorker cloudWorker = new CloudsWorker(this, setting.Value);
                 //todo work in the style of the labelbutton
 
                 //Button button = new Button() { Content = setting.Key, Style = buttonStyle };

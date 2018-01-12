@@ -12,13 +12,14 @@ using System.Windows.Input;
 
 namespace CloudManager
 {
-    public class CloudWorker
+    //todo rename
+    public class CloudsWorker
     {
         public const int MAX_ROW_COUNT = 5;
         public String DOWNLOAD_DIRECTORY = @"C:\TMP";
+        public DownloadProgress downloadProgress { private set; get; }
 
         private MainWindow mainWindow;
-        private DownloadProgress downloadProgress;
         private Utility utility;
         private IDictionary<Button, String> buttonDict;
         private ICloudWorker cloudWorker;
@@ -26,11 +27,11 @@ namespace CloudManager
         private String assemblyPath;
         private PopupWorker popupWorker;
 
-        public CloudWorker(MainWindow mainWindow, String assemblyPath)
+        public CloudsWorker(MainWindow mainWindow, String assemblyPath)
         {
             this.mainWindow = mainWindow;
             utility = new Utility();
-            popupWorker = new PopupWorker();
+            popupWorker = new PopupWorker() {CloudsWorker = this};
             popupWorker.Initialize();
             this.assemblyPath = assemblyPath;
             buttonDict = new Dictionary<Button, String>();
@@ -46,6 +47,7 @@ namespace CloudManager
             IDictionary<String, String> dirs = cloudWorker.GetChildOfRootDir();
             FillInTheCloudContentGrid(dirs);
             downloadProgress = DownloadProgressMethod;
+            popupWorker.CloudWorker = cloudWorker;
         }
 
         private Type InitializeCloudWorker()
@@ -77,14 +79,19 @@ namespace CloudManager
                     mainWindow.GRID_CLOUD_CONTENT.RowDefinitions.Add(new RowDefinition());
                     x = 0;
                 }
-                Button actual = new Button() { Content = keys.Value };
+                String content = null;
+                if (keys.Value.Length < 8)
+                    content = keys.Value;
+                else
+                    content = String.Format("{0}...", keys.Value.Substring(0, 8));
+                Button actual = new Button() { Content = content , Tag = keys.Value};
                 actual.MouseRightButtonDown += ((Object sender, MouseButtonEventArgs e) =>
                 {
                     Button actualButton = sender as Button;
                     if (actualButton == null)
                         return;
                     popupWorker.popupName.IsOpen = false;
-                    popupWorker.ShowPopupRightClick(actualButton.Content as String);                    
+                    popupWorker.ShowPopupRightClick(actualButton);
                 });
                 actual.MouseLeave += ((Object sender, MouseEventArgs e) =>
                 {
@@ -95,7 +102,9 @@ namespace CloudManager
                     Button actualButton = sender as Button;
                     if (actualButton == null)
                         return;
-                    popupWorker.ShowPopupName(actualButton.Content as String);
+                    String text = actualButton.Content as String;
+                    if (text.Length > 8)
+                        popupWorker.ShowPopupName(actualButton.Tag as String);
                 });
                 actual.Click += click_content;
                 mainWindow.GRID_CLOUD_CONTENT.Children.Add(actual);
@@ -105,7 +114,7 @@ namespace CloudManager
                 buttonDict.Add(actual, keys.Key);
             }
         }
-        
+
         public void click_back()
         {
             if (String.IsNullOrEmpty(backID))
@@ -143,6 +152,12 @@ namespace CloudManager
             }
             else
                 WorkWithFile(rootID);
+        }
+
+        public String GetId(Button button) {
+            String result = null;
+            buttonDict.TryGetValue(button, out result);
+            return result;
         }
 
         private void WorkWithFile(String rootID)

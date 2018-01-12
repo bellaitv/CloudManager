@@ -18,7 +18,14 @@ namespace CloudManager
         public Popup popupName { get; set; }
         public Popup popupRightClick { get; set; }
 
-        public void Initialize() {
+        private Button lastRightClickedButton;
+
+        public ICloudWorker CloudWorker { get; set; }
+
+        public CloudsWorker CloudsWorker { get; set; }
+
+        public void Initialize()
+        {
             popupName = CreatePopupName();
             popupRightClick = CreateRightClickPopup();
         }
@@ -62,15 +69,41 @@ namespace CloudManager
             Button download = new Button() { Content = "Download" };
             download.Click += ((Object sender, RoutedEventArgs e) =>
             {
+                Button actualButton = sender as Button;
+                using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+                {
+                    System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+                    String id = CloudsWorker.GetId(lastRightClickedButton);
+                    if (!CloudWorker.IsFile(id))
+                        DownloadFolder(id, dialog.SelectedPath, lastRightClickedButton.Content as String);
+                    else
+                        DownloadFile(id, dialog.SelectedPath);
+
+                }
+
                 popup.IsOpen = false;
 
-            }); //click_downloadPopupButton;
+            });
             Button moveToOtherCloud = new Button() { Content = "Move to another cloud" };
             moveToOtherCloud.Click += ((Object sender, RoutedEventArgs e) =>
             {
                 popup.IsOpen = false;
             });
+            Button share = new Button() { Content = "Share" };
+            share.Click += ((Object sender, RoutedEventArgs e) =>
+            {
+                popup.IsOpen = false;
+            });
+            Button rename = new Button() { Content = "Rename" };
+            rename.Click += ((Object sender, RoutedEventArgs e) =>
+            {
+                popup.IsOpen = false;
+            });
             Button delete = new Button() { Content = "Delete" };
+            delete.Click += ((Object sender, RoutedEventArgs e) =>
+            {
+                popup.IsOpen = false;
+            });
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition());
@@ -91,8 +124,55 @@ namespace CloudManager
             return popup;
         }
 
-        internal void ShowPopupRightClick(string v)
+        private void DownloadFolder(string id, string selectedPath, string name)
         {
+            String downloadFolder = String.Format("{0}//{1}", selectedPath, name);
+            if (!Directory.Exists(downloadFolder))
+                Directory.CreateDirectory(downloadFolder);
+            IDictionary<String, String> elements = CloudWorker.GetChildElements(id);
+            foreach (KeyValuePair<String, String> keys in elements)
+            {
+                if (CloudWorker.IsFile(keys.Key))
+                    DownloadFile(keys.Key, downloadFolder);
+                else
+                    DownloadFolder(keys.Key, downloadFolder, keys.Value);
+            }
+        }
+
+        //todo move to another class
+        private void DownloadFile(String id, String dirPath)
+        {
+            String originalFileName = null;
+            String type = null;
+            MemoryStream stream = CloudWorker.DownloadFile(id, CloudsWorker.downloadProgress, ref originalFileName, ref type);
+            FileStream fileStream = null;
+
+            try
+            {
+                string fileName = String.Format("{0}{1}{2}", dirPath, System.IO.Path.DirectorySeparatorChar, originalFileName);
+                fileStream = new FileStream(fileName, FileMode.Create);
+                stream.WriteTo(fileStream);
+                stream.Close();
+                fileStream.Close();
+            }
+
+            catch (Exception ex)
+            {
+                //todo show message to user
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                if (fileStream != null)
+                    fileStream.Close();
+                if (stream != null)
+                    stream.Close();
+            }
+        }
+
+        internal void ShowPopupRightClick(Button b)
+        {
+            lastRightClickedButton = b;
             popupRightClick.IsOpen = true;
             var point = Mouse.GetPosition(Application.Current.MainWindow);
             popupRightClick.HorizontalOffset = point.X;
@@ -101,7 +181,7 @@ namespace CloudManager
             if (grid == null)
                 return;
             TextBox textBox = grid.Children[0] as TextBox;
-            textBox.Text = v;
+            textBox.Text = b.Content as String;
         }
 
         internal void ShowPopupName(String text)
